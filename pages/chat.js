@@ -5,7 +5,8 @@ const Chat = () => {
   const [socket, setSocket] = useState(null);
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
-  const username = localStorage.getItem("username"); // Get username
+  const [username, setUsername] = useState("");
+  const [sessionId, setSessionId] = useState(""); // Unique session ID for the user
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -15,48 +16,82 @@ const Chat = () => {
       return;
     }
 
-    const newSocket = io("http://localhost:1337", { query: { token } });
-    setSocket(newSocket);
+    // Fetch user information from token
+    const fetchUserData = async () => {
+      const response = await fetch("http://localhost:1337/api/users/me", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-    fetchMessages(token);
+      if (response.ok) {
+        const data = await response.json();
+        setUsername(data.username);
+      } else {
+        alert("Failed to fetch user data");
+        window.location.href = "/";
+      }
+    };
 
-    newSocket.on("message", (data) => {
-      setMessages((prev) => [...prev, data]);
+    fetchUserData();
+
+    // Generate or retrieve the session ID
+    const storedSessionId = localStorage.getItem("sessionId");
+    if (!storedSessionId) {
+      const newSessionId = `session_${Date.now()}`;
+      localStorage.setItem("sessionId", newSessionId);
+      setSessionId(newSessionId);
+    } else {
+      setSessionId(storedSessionId);
+    }
+
+    // Connect to WebSocket server
+    const newSocket = io("http://localhost:1337", {
+      query: { token },
     });
+
+    // Listen for bot replies
+    newSocket.on("botReply", (data) => {
+      setMessages((prev) => [...prev, { user: "bot", text: data.message }]);
+    });
+
+    setSocket(newSocket);
 
     return () => newSocket.disconnect();
   }, []);
 
-  const fetchMessages = async (token) => {
-    try {
-      const response = await fetch(
-        `http://localhost:1337/api/messages?filters[username][$eq]=${username}`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+  // Load chat history when the component mounts
+  useEffect(() => {
+    const fetchChatHistory = async () => {
+      if (sessionId) {
+        const response = await fetch(
+          `http://localhost:1337/api/messages?filters[sessionId][$eq]=${sessionId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
 
-      if (response.ok) {
-        const data = await response.json();
-        const fetchedMessages = data.data.map((msg) => ({
-          user: msg.username,
-          text: msg.message,
-        }));
-        setMessages((prev) => [...prev, ...fetchedMessages]);
-      } else {
-        console.error("Error fetching messages:", response.statusText);
+        if (response.ok) {
+          const data = await response.json();
+          const history = data.data.map((msg) => ({
+            user: msg.username === username ? username : "bot",
+            text: msg.message,
+          }));
+          setMessages(history);
+        }
       }
-    } catch (error) {
-      console.error("Error:", error.message);
-    }
-  };
+    };
+
+    fetchChatHistory();
+  }, [sessionId, username]);
 
   const handleSendMessage = async () => {
-    const token = localStorage.getItem("token");
-    if (message.trim() && token && socket) {
+    if (message.trim() && socket) {
+      const token = localStorage.getItem("token");
+
+      // Save the message to Strapi
       const response = await fetch("http://localhost:1337/api/messages", {
         method: "POST",
         headers: {
@@ -65,25 +100,63 @@ const Chat = () => {
         },
         body: JSON.stringify({
           data: {
-            username, // Use username from localStorage
+            username,
+            sessionId,
             message,
           },
         }),
       });
 
       if (response.ok) {
+        // Emit the message to the server
         socket.emit("sendMessage", { user: username, message });
+
+        // Update local messages
         setMessages((prev) => [...prev, { user: username, text: message }]);
-        setMessage("");
+        setMessage(""); // Clear input field
+
+        // Bot replies back
+        const botResponse = await fetch(
+          `http://localhost:1337/api/messages?filters[sessionId][$eq]=${sessionId}&sort[createdAt]=desc&pagination[page]=1&pagination[pageSize]=1`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        if (botResponse.ok) {
+          const botMessage = await botResponse.json();
+          const reply = botMessage?.data?.[0]?.message || "I couldn't find anything!";
+          
+          // Save the bot's reply to Strapi as well
+          await fetch("http://localhost:1337/api/messages", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+              data: {
+                username: "bot",
+                sessionId,
+                message: reply,
+              },
+            }),
+          });
+
+          // Update local messages
+          setMessages((prev) => [...prev, { user: "bot", text: reply }]);
+        }
       } else {
-        console.error("Failed to send message.");
+        console.error("Error saving message");
       }
     }
   };
 
   return (
     <div style={styles.container}>
-      <h1>Welcome to the Chat Room</h1>
+      <h1>Chat with Bot</h1>
       <div style={styles.chatBox}>
         {messages.map((msg, index) => (
           <div
