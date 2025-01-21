@@ -46,8 +46,9 @@ const AuthPage = () => {
       const data = await response.json();
       console.log("Success:", data);
 
-      // Save JWT token to localStorage
+      // Save JWT token and username to localStorage
       localStorage.setItem("token", data.jwt);
+      localStorage.setItem("username", data.user?.username || username);
 
       // Navigate to the chat page after successful login/registration
       router.push("/chat");
@@ -76,7 +77,7 @@ const AuthPage = () => {
         <label style={styles.label}>
           Email or Username:
           <input
-            type="email"
+            // type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             style={styles.input}
@@ -121,6 +122,7 @@ const AuthPage = () => {
     </div>
   );
 };
+
 
 const styles = {
   container: {

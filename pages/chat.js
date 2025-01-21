@@ -5,10 +5,9 @@ const Chat = () => {
   const [socket, setSocket] = useState(null);
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
-  const [username, setUsername] = useState("");
+  const username = localStorage.getItem("username"); // Get username
 
   useEffect(() => {
-    // Get JWT token from localStorage
     const token = localStorage.getItem("token");
     if (!token) {
       alert("Unauthorized! Redirecting to login...");
@@ -16,33 +15,69 @@ const Chat = () => {
       return;
     }
 
-    // Connect to the WebSocket server
-    const newSocket = io("http://localhost:1337", {
-      query: { token },
-    });
+    const newSocket = io("http://localhost:1337", { query: { token } });
+    setSocket(newSocket);
 
-    // Listen for welcome messages
-    newSocket.on("welcome", (data) => {
-      setUsername(data.userData);
-      setMessages((prev) => [...prev, { user: "bot", text: data.text }]);
-    });
+    fetchMessages(token);
 
-    // Listen for incoming messages
     newSocket.on("message", (data) => {
       setMessages((prev) => [...prev, data]);
     });
 
-    setSocket(newSocket);
-
     return () => newSocket.disconnect();
   }, []);
 
-  const handleSendMessage = () => {
-    if (message.trim() && socket) {
-      // Emit message to the server
-      socket.emit("sendMessage", { user: username, message });
-      setMessages((prev) => [...prev, { user: username, text: message }]);
-      setMessage("");
+  const fetchMessages = async (token) => {
+    try {
+      const response = await fetch(
+        `http://localhost:1337/api/messages?filters[username][$eq]=${username}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        const fetchedMessages = data.data.map((msg) => ({
+          user: msg.username,
+          text: msg.message,
+        }));
+        setMessages((prev) => [...prev, ...fetchedMessages]);
+      } else {
+        console.error("Error fetching messages:", response.statusText);
+      }
+    } catch (error) {
+      console.error("Error:", error.message);
+    }
+  };
+
+  const handleSendMessage = async () => {
+    const token = localStorage.getItem("token");
+    if (message.trim() && token && socket) {
+      const response = await fetch("http://localhost:1337/api/messages", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          data: {
+            username, // Use username from localStorage
+            message,
+          },
+        }),
+      });
+
+      if (response.ok) {
+        socket.emit("sendMessage", { user: username, message });
+        setMessages((prev) => [...prev, { user: username, text: message }]);
+        setMessage("");
+      } else {
+        console.error("Failed to send message.");
+      }
     }
   };
 
