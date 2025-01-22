@@ -9,14 +9,13 @@ const AuthPage = () => {
   const [showPassword, setShowPassword] = useState(false); // Password visibility
   const router = useRouter(); // Navigation hook
 
-  const backendHost = process.env.NEXT_PUBLIC_BACKEND_HOST;
-
+  const backurl = process.env.NEXT_PUBLIC_BACKEND_HOST;
   const handleAuth = async (e) => {
     e.preventDefault();
 
     const endpoint = isRegister
-      ? "${backendHost}/api/auth/local/register"
-      : "${backendHost}/api/auth/local";
+      ? `${backurl}/api/auth/local/register`
+      : `${backurl}/api/auth/local`;
 
     const userData = isRegister
       ? { // Registration data

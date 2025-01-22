@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { io } from "socket.io-client";
 
-const backendHost = process.env.NEXT_PUBLIC_BACKEND_HOST;
+const backurl = process.env.NEXT_PUBLIC_BACKEND_HOST;
+
 const Chat = () => {
   const [socket, setSocket] = useState(null);
   const [message, setMessage] = useState("");
@@ -20,7 +21,7 @@ const Chat = () => {
 
     // Fetch user information from token
     const fetchUserData = async () => {
-      const response = await fetch("${backendHost}/api/users/me", {
+      const response = await fetch(`${backurl}/api/users/me`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -38,7 +39,7 @@ const Chat = () => {
     fetchUserData();
 
     // Connect to WebSocket server
-    const newSocket = io("${backendHost}", {
+    const newSocket = io(`${backurl}`, {
       query: { token },
     });
 
@@ -59,7 +60,7 @@ const Chat = () => {
       if (username && token) {
         try {
           // Fetch all sessions from Strapi
-          const response = await fetch("${backendHost}/api/messages?distinct=sessionId", {
+          const response = await fetch(`${backurl}/api/messages?distinct=sessionId`, {
             headers: {
               Authorization: `Bearer ${token}`,
             },
@@ -89,7 +90,7 @@ const Chat = () => {
         try {
           // Fetch messages for the selected session
           const response = await fetch(
-            `${backendHost}/api/messages?filters[sessionId][$eq]=${sessionId}&sort[createdAt]=asc`,
+            `${backurl}/api/messages?filters[sessionId][$eq]=${sessionId}&sort[createdAt]=asc`,
             {
               headers: {
                 Authorization: `Bearer ${token}`,
@@ -128,7 +129,7 @@ const Chat = () => {
       const token = localStorage.getItem("token");
 
       // Save the message to Strapi
-      const response = await fetch("${backendHost}/api/messages", {
+      const response = await fetch(`${backurl}/api/messages`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -153,7 +154,7 @@ const Chat = () => {
 
         // Bot replies back
         const botResponse = await fetch(
-          `${backendHost}/api/messages?filters[sessionId][$eq]=${sessionId}&sort[createdAt]=desc&pagination[page]=1&pagination[pageSize]=1`,
+          `${backurl}/api/messages?filters[sessionId][$eq]=${sessionId}&sort[createdAt]=desc&pagination[page]=1&pagination[pageSize]=1`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -166,7 +167,7 @@ const Chat = () => {
           const reply = botMessage?.data?.[0]?.message || "I couldn't find anything!";
           
           // Save the bot's reply to Strapi as well
-          await fetch("${backendHost}/api/messages", {
+          await fetch(`${backurl}/api/messages`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
