@@ -9,6 +9,8 @@ const AuthPage = () => {
   const [showPassword, setShowPassword] = useState(false); // Password visibility
   const router = useRouter(); // Navigation hook
 
+  const backendHost = process.env.NEXT_PUBLIC_BACKEND_HOST;
+
   const handleAuth = async (e) => {
     e.preventDefault();
 
