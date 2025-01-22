@@ -13,8 +13,8 @@ const AuthPage = () => {
     e.preventDefault();
 
     const endpoint = isRegister
-      ? "http://localhost:1337/api/auth/local/register"
-      : "http://localhost:1337/api/auth/local";
+      ? "${backendHost}/api/auth/local/register"
+      : "${backendHost}/api/auth/local";
 
     const userData = isRegister
       ? { // Registration data
