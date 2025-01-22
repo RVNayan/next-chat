@@ -63,30 +63,46 @@ const Chat = () => {
   // Load chat history when the component mounts
   useEffect(() => {
     const fetchChatHistory = async () => {
-      if (sessionId) {
-        const response = await fetch(
-          `http://localhost:1337/api/messages?filters[sessionId][$eq]=${sessionId}`,
-          {
+      const token = localStorage.getItem("token");
+      if (username && token) {
+        try {
+          // Fetch all messages from Strapi
+          const response = await fetch("http://localhost:1337/api/messages?sort[createdAt]=asc", {
             headers: {
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
+              Authorization: `Bearer ${token}`,
             },
+          });
+  
+          if (response.ok) {
+            const data = await response.json();
+  
+            // Filter messages based on `username` or `sentby`
+            const filteredMessages = data.data
+              .filter(
+                (msg) =>
+                  msg.username === username || // Messages sent by the user
+                  (msg.sentby === username && msg.username === "bot") // Bot messages for the user
+              )
+              .map((msg) => ({
+                user: msg.username,
+                text: msg.message,
+              }));
+  
+            setMessages(filteredMessages);
+          } else {
+            console.error("Failed to fetch chat history.");
           }
-        );
-
-        if (response.ok) {
-          const data = await response.json();
-          const history = data.data.map((msg) => ({
-            user: msg.username === username ? username : "bot",
-            text: msg.message,
-          }));
-          setMessages(history);
+        } catch (error) {
+          console.error("Error fetching chat history:", error);
         }
       }
     };
-
+  
     fetchChatHistory();
-  }, [sessionId, username]);
+  }, [username]);
+  
 
+  
   const handleSendMessage = async () => {
     if (message.trim() && socket) {
       const token = localStorage.getItem("token");
@@ -139,6 +155,7 @@ const Chat = () => {
             body: JSON.stringify({
               data: {
                 username: "bot",
+                sentby: username,
                 sessionId,
                 message: reply,
               },
@@ -188,6 +205,7 @@ const Chat = () => {
     </div>
   );
 };
+
 
 const styles = {
   container: {
