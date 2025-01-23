@@ -285,22 +285,24 @@ const Chat = () => {
 
 const styles = {
   logoMain: {
-    marginTop:"-60px",
-    marginBottom:"30px"
+    marginTop: "70px",
+    marginBottom: "30px"
   },
   container: {
     display: "flex",
     maxWidth: "1200px",
     margin: "auto",
     fontFamily: "Roboto, Arial, sans-serif",
+    flexDirection: "row",
+    padding: "0 1rem",
   },
   sidebar: {
-    width: "250px",
+    width: "150px",
     padding: "1rem",
     borderRight: "1px solid #ccc",
     display: "flex",
     flexDirection: "column",
-    marginTop:"10%"
+    marginTop: "10%",
   },
   newSessionButton: {
     padding: "0.5rem 1rem",
@@ -326,10 +328,10 @@ const styles = {
   chatContainer: {
     flex: 1,
     padding: "1rem",
-    marginTop: "30px"
+    marginTop: "30px",
   },
   chatBox: {
-    height: "400px", // Default height
+    height: "400px", // Default height for desktop
     overflowY: "scroll",
     border: "1px solid #ccc",
     borderRadius: "8px",
@@ -339,10 +341,6 @@ const styles = {
     flexDirection: "column",
     gap: "0.5rem",
     backgroundColor: "#f9f9f9",
-    // Media query for screens less than 200px in width
-    '@media (max-width: 500px)': {
-      height: "300px", // Adjusted height for small screens
-    },
   },
   message: {
     padding: "0.5rem",
@@ -361,7 +359,6 @@ const styles = {
     borderRadius: "4px",
     fontSize: "1rem",
   },
-  
   sendButton: {
     backgroundSize: "contain",              // Make the image fit the button
     backgroundRepeat: "no-repeat",          // Prevent image repetition
@@ -375,7 +372,6 @@ const styles = {
     width: "20px",      // Set image width
     height: "20px",     // Set image height
   },
-
   userIcon: {
     fontSize: "1.2rem",
     cursor: "pointer",
@@ -383,10 +379,8 @@ const styles = {
     color: "#0070f3"
   },
   dropdownMenu: {
-    // backgroundColor: "white",
     border: "1px solid #ccc",
     position: "absolute",
-    // paddin: "1rem",
     top: "20px",
     right: "10px",
     width: "148px",
@@ -399,8 +393,60 @@ const styles = {
     cursor: "pointer",
     color: "black",
     textAlign: "center",
-    backgroundColor:"red",
-    
+    backgroundColor: "red",
+  },
+
+  // Mobile-specific styles
+  "@media (max-width: 768px)": {
+
+    logoMain: {
+      marginTop: "60px",
+      marginBottom: "30px"
+    },
+
+    container: {
+      flexDirection: "column", // Stack the sidebar and chat container
+    },
+    sidebar: {
+      width: "50%", // Make sidebar full-width on mobile
+    },
+    chatContainer: {
+      padding: "0.5rem", // Less padding on mobile
+    },
+    chatBox: {
+      height: "300px", // Adjust chatbox height on mobile
+    },
+    inputContainer: {
+      flexDirection: "column", // Stack input and send button
+      gap: "0.5rem",
+    },
+    input: {
+      fontSize: "0.9rem", // Smaller font size for input field
+    },
+    sendButton: {
+      width: "35px", // Smaller send button on mobile
+      height: "35px",
+    },
+    userIcon: {
+      fontSize: "1rem", // Smaller font size for username
+    },
+
+    message: {
+      width: "20px",
+    },
+  },
+
+  // Very small screen sizes (e.g., mobile portrait)
+  "@media (min-width: 500px)": {
+    container: {
+      padding: "0.2rem", // More compact padding
+    },
+    chatBox: {
+      height: "250px", // Reduce chatbox height further
+    },
+    input: {
+      fontSize: "0.8rem", // Even smaller font size for input
+    },
   },
 };
 
