@@ -24,7 +24,7 @@ const AuthPage = () => {
           password,
         }
       : { // Login data
-          identifier: email || username, // Email as the identifier for login
+          identifier: username || email, // Email as the identifier for login
           password,
         };
 
@@ -61,7 +61,11 @@ const AuthPage = () => {
 
   return (
     <div style={styles.container}>
-      <h1>{isRegister ? "Register" : "Login"}</h1>
+      {/* Welcome Text Outside the Main Form Container */}
+      <div style={styles.welcomeText}>Welcome to MirrorBot</div>
+
+      <div style={styles.log}>{isRegister ? "Register" : "Login"}</div>
+      
       <form onSubmit={handleAuth} style={styles.form}>
         {isRegister && (
           <label style={styles.label}>
@@ -76,17 +80,18 @@ const AuthPage = () => {
           </label>
         )}
         <label style={styles.label}>
-          Email or Username:
+          {isRegister ? "Email" : "Enter your MirrorBot Username"} {/* Conditional Label Text */}
           <input
-            // type="email"
+            type="text"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             style={styles.input}
+            placeholder={isRegister ? "example@bot.com" : ""}
             required
           />
         </label>
         <label style={styles.label}>
-          Password:
+          {isRegister ? "Password" : "MirrorBot Password"} {/* Conditional Label Text */}
           <div style={styles.passwordContainer}>
             <input
               type={showPassword ? "text" : "password"}
@@ -124,16 +129,34 @@ const AuthPage = () => {
   );
 };
 
-
 const styles = {
   container: {
     maxWidth: "400px",
     margin: "auto",
     padding: "2rem",
+    marginTop: "20%",
     border: "1px solid #ccc",
     borderRadius: "8px",
     boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
     fontFamily: "Arial, sans-serif",
+    width: "100%",
+    boxSizing: "border-box",
+  },
+  welcomeText: {
+    fontSize: "3rem",      // Larger font size for the welcome text
+    fontWeight: "bold",    // Bold text for prominence
+    marginBottom: "1rem",  // Add space below the welcome text
+    textAlign: "center",   // Center the text horizontally
+    color: "Black",      // Blue color (adjustable)
+    padding: "0.5rem",     // Padding for visual spacing
+    backgroundColor: "#f0f8ff", // Optional light background
+    borderRadius: "8px",   // Optional rounded corners
+  },
+  log: {
+    textAlign: "right",
+    marginBottom: "20px",
+    marginTop: "-10px",
+    fontSize: "400%",
   },
   form: {
     display: "flex",
@@ -145,7 +168,7 @@ const styles = {
     marginBottom: "0.5rem",
   },
   input: {
-    padding: "0.5rem",
+    padding: "0.75rem",
     border: "1px solid #ccc",
     borderRadius: "4px",
     fontSize: "1rem",
@@ -183,6 +206,48 @@ const styles = {
     color: "#0070f3",
     textDecoration: "underline",
     cursor: "pointer",
+  },
+
+  // Responsive Design
+  "@media (max-width: 480px)": {
+    container: {
+      marginTop: "20%",
+      maxWidth: "90%",
+      padding: "1.5rem",
+    },
+    label: {
+      fontSize: "0.9rem",
+    },
+    input: {
+      fontSize: "0.9rem",
+      padding: "0.5rem",
+    },
+    submitButton: {
+      fontSize: "1rem",
+      padding: "0.6rem",
+    },
+    toggleButton: {
+      fontSize: "0.8rem",
+      padding: "0.4rem",
+    },
+  },
+
+  "@media (max-width: 768px)": {
+    container: {
+      maxWidth: "80%",
+      padding: "1.8rem",
+    },
+    label: {
+      fontSize: "1rem",
+    },
+    input: {
+      fontSize: "1rem",
+      padding: "0.6rem",
+    },
+    submitButton: {
+      fontSize: "1rem",
+      padding: "0.7rem",
+    },
   },
 };
 

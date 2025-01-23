@@ -10,6 +10,7 @@ const Chat = () => {
   const [username, setUsername] = useState("");
   const [sessionId, setSessionId] = useState(""); // Current active session ID
   const [sessions, setSessions] = useState([]); // List of all sessions
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false); // User menu dropdown state
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -203,12 +204,23 @@ const Chat = () => {
     setSessionId(newSessionId);
     setMessages([]); // Clear current messages when creating a new session
   };
+  console.log(sessionId);
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    window.location.href = "/";
+  };
 
   return (
+    
     <div style={styles.container}>
+      
       <div style={styles.sidebar}>
-        <button onClick={createNewSession} style={styles.newSessionButton}>New Session</button>
-        <h2>Sessions</h2>
+      <img src="/logo.jpg" style={styles.logoMain} />
+
+        <button onClick={createNewSession} style={styles.newSessionButton}>
+          New Session
+        </button>
+        <h2>Previous</h2>
         <ul style={styles.sessionsList}>
           {sessions.map((session) => (
             <li
@@ -222,7 +234,16 @@ const Chat = () => {
         </ul>
       </div>
       <div style={styles.chatContainer}>
-        <h1>Chat with Bot</h1>
+        <div style={styles.userIcon} onClick={() => setIsDropdownOpen(!isDropdownOpen)}>
+        {`Current user - ${username}`}
+        {isDropdownOpen && (
+            <div style={styles.dropdownMenu}>
+              <button onClick={handleLogout} style={styles.dropdownItem}>Logout</button>
+              <button onClick={() => setIsDropdownOpen(false)} style={styles.dropdownItem}>Close</button>
+            </div>
+          )}
+        </div>
+        <h1 style={{ marginBottom: "30px" }}>Create a New Session and start Typing</h1>
         <div style={styles.chatBox}>
           {messages.map((msg, index) => (
             <div
@@ -244,24 +265,34 @@ const Chat = () => {
             type="text"
             value={message}
             onChange={(e) => setMessage(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                handleSendMessage();
+              }
+            }}
             placeholder="Type your message..."
             style={styles.input}
           />
           <button onClick={handleSendMessage} style={styles.sendButton}>
-            Send
-          </button>
+          <img src="/send.jpeg" alt="Send" style={styles.sendIcon} />
+        </button>
         </div>
       </div>
     </div>
   );
+
 };
 
 const styles = {
+  logoMain: {
+    marginTop:"-60px",
+    marginBottom:"30px"
+  },
   container: {
     display: "flex",
     maxWidth: "1200px",
     margin: "auto",
-    fontFamily: "Arial, sans-serif",
+    fontFamily: "Roboto, Arial, sans-serif",
   },
   sidebar: {
     width: "250px",
@@ -269,6 +300,7 @@ const styles = {
     borderRight: "1px solid #ccc",
     display: "flex",
     flexDirection: "column",
+    marginTop:"10%"
   },
   newSessionButton: {
     padding: "0.5rem 1rem",
@@ -286,7 +318,7 @@ const styles = {
   sessionItem: {
     cursor: "pointer",
     padding: "0.5rem",
-    backgroundColor: "#f4f4f4",
+    backgroundColor: "#0070f3",
     marginBottom: "0.5rem",
     borderRadius: "4px",
     transition: "background-color 0.3s",
@@ -294,9 +326,10 @@ const styles = {
   chatContainer: {
     flex: 1,
     padding: "1rem",
+    marginTop: "30px"
   },
   chatBox: {
-    height: "400px",
+    height: "400px", // Default height
     overflowY: "scroll",
     border: "1px solid #ccc",
     borderRadius: "8px",
@@ -306,6 +339,10 @@ const styles = {
     flexDirection: "column",
     gap: "0.5rem",
     backgroundColor: "#f9f9f9",
+    // Media query for screens less than 200px in width
+    '@media (max-width: 500px)': {
+      height: "300px", // Adjusted height for small screens
+    },
   },
   message: {
     padding: "0.5rem",
@@ -324,13 +361,46 @@ const styles = {
     borderRadius: "4px",
     fontSize: "1rem",
   },
+  
   sendButton: {
-    padding: "0.5rem 1rem",
-    backgroundColor: "#0070f3",
-    color: "white",
-    border: "none",
-    borderRadius: "4px",
+    backgroundSize: "contain",              // Make the image fit the button
+    backgroundRepeat: "no-repeat",          // Prevent image repetition
+    backgroundPosition: "center",           // Center the image in the button
+    border: "none",                         // Remove button border
+    width: "40px",                          // Adjust button width
+    height: "40px",                         // Adjust button height
+    cursor: "pointer",                      // Pointer cursor on hover
+  },
+  sendIcon: {
+    width: "20px",      // Set image width
+    height: "20px",     // Set image height
+  },
+
+  userIcon: {
+    fontSize: "1.2rem",
     cursor: "pointer",
+    marginBottom: "1rem",
+    color: "#0070f3"
+  },
+  dropdownMenu: {
+    // backgroundColor: "white",
+    border: "1px solid #ccc",
+    position: "absolute",
+    // paddin: "1rem",
+    top: "20px",
+    right: "10px",
+    width: "148px",
+    borderRadius: "4px",
+    boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+  },
+  dropdownItem: {
+    padding: "1rem",
+    borderBottom: "1px solid #ccc",
+    cursor: "pointer",
+    color: "black",
+    textAlign: "center",
+    backgroundColor:"red",
+    
   },
 };
 
