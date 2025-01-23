@@ -285,7 +285,7 @@ const Chat = () => {
 
 const styles = {
   logoMain: {
-    marginTop: "70px",
+    marginTop: "10px",
     marginBottom: "30px"
   },
   container: {
@@ -297,7 +297,7 @@ const styles = {
     padding: "0 1rem",
   },
   sidebar: {
-    width: "150px",
+    width: "170px",
     padding: "1rem",
     borderRight: "1px solid #ccc",
     display: "flex",
@@ -396,57 +396,67 @@ const styles = {
     backgroundColor: "red",
   },
 
-  // Mobile-specific styles
-  "@media (max-width: 768px)": {
-
-    logoMain: {
-      marginTop: "60px",
-      marginBottom: "30px"
-    },
-
+  "@media (max-width: 8000px)": {
     container: {
-      flexDirection: "column", // Stack the sidebar and chat container
+      flexDirection: "column", // Stack sidebar and chat vertically
+      alignItems: "center", // Center content horizontally
     },
     sidebar: {
-      width: "50%", // Make sidebar full-width on mobile
+      width: "70%", // Make sidebar almost full-width
+      borderRight: "none", // Remove right border
+      borderBottom: "1px solid #ccc", // Add bottom border
+      marginBottom: "1rem",
+      marginTop: "10px",
+      alignItems:"center"
     },
     chatContainer: {
-      padding: "0.5rem", // Less padding on mobile
+      width: "90%",
+      marginTop: "10px",
     },
     chatBox: {
-      height: "300px", // Adjust chatbox height on mobile
+      height: "30vh", // Use viewport height for dynamic sizing
+      maxHeight: "400px", // Set a maximum height
+      overflowY: "auto",
+    },
+    message: {
+      maxWidth: "90%", // Adjust message width
     },
     inputContainer: {
-      flexDirection: "column", // Stack input and send button
-      gap: "0.5rem",
+      flexDirection: "row", // Keep input and button in a row
+      width: "100%",
     },
     input: {
-      fontSize: "0.9rem", // Smaller font size for input field
+      flex: 1, // Allow input to take up available space
     },
-    sendButton: {
-      width: "35px", // Smaller send button on mobile
-      height: "35px",
+    logoMain: {
+        width: "100px",
+        height: "100px"
     },
-    userIcon: {
-      fontSize: "1rem", // Smaller font size for username
+    newSessionButton: {
+        width: "100%",
+        marginBottom: "10px"
     },
+    sessionsList: {
+        width: "100%",
+    },
+    sessionItem: {
+        width: "100%",
+        textAlign: "center"
+    }
 
-    message: {
-      width: "20px",
-    },
   },
 
   // Very small screen sizes (e.g., mobile portrait)
-  "@media (min-width: 500px)": {
-    container: {
-      padding: "0.2rem", // More compact padding
-    },
+  "@media (max-width: 400px)": {
     chatBox: {
-      height: "250px", // Reduce chatbox height further
+      height: "40vh", // Adjust height for smaller screens
     },
     input: {
-      fontSize: "0.8rem", // Even smaller font size for input
+      fontSize: "0.8rem", // Further reduce input font size
     },
+     message: { 
+       width: "90%", 
+     }, 
   },
 };
 
