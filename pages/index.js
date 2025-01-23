@@ -137,7 +137,7 @@ const styles = {
     maxWidth: "400px",
     margin: "auto",
     padding: "2rem",
-    marginTop: "20%",
+    marginTop: "5%",
     border: "1px solid #ccc",
     borderRadius: "8px",
     boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",

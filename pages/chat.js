@@ -139,12 +139,7 @@ const Chat = () => {
     if (message.trim() && socket) {
       const token = localStorage.getItem("token");
 
-      // Add 'bot is typing...' to messages
-      setMessages((prev) => [
-        ...prev,
-        { user: "bot", text: "Bot is typing...", typing: true },
-      ]);
-
+      // Instead of adding a 'bot is typing...' message, we just send the message directly.
       const response = await fetch(`${backurl}/api/messages`, {
         method: "POST",
         headers: {
@@ -164,7 +159,7 @@ const Chat = () => {
         socket.emit("sendMessage", { user: username, message });
 
         setMessages((prev) => [
-          ...prev.filter((msg) => !msg.typing), // Remove 'typing' message
+          ...prev,
           { user: username, text: message },
         ]);
         setMessage("");
@@ -209,7 +204,7 @@ const Chat = () => {
   const handleSessionSelect = (selectedSessionId) => {
     setSessionId(selectedSessionId);
     setMessages([]);
-    alert(`Switched to session ${selectedSessionId}`); // Show popup.
+    alert(`You will switched to session ${selectedSessionId}`); // Show popup.
   };
 
   const createNewSession = () => {
@@ -337,34 +332,16 @@ const styles = {
     marginTop: "10px",
   },
   sidebar: {
-    // marginTop: "5px",
     width: "200px",
     padding: "1rem",
     borderRight: "1px solid #ccc",
     display: "flex",
     flexDirection: "column",
   },
-  collapsedSidebar: {
-    width: "0px",
-    padding: "0.5rem",
-    borderRight: "1px solid #ccc",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    backgroundColor: "0070f3",
-  },
-  collapseButton: {
-    backgroundColor: "#0070f3",
-    color: "#0070f3",
-    border: "none",
-    borderRadius: "4px",
-    cursor: "pointer",
-    marginBottom: "1rem",
-    padding: "0.5rem",
-  },
   logoMain: {
     marginTop: "10px",
     marginBottom: "30px",
+    width:"180px"
   },
   newSessionButton: {
     padding: "0.5rem 1rem",
@@ -402,7 +379,7 @@ const styles = {
   },
   chatBox: {
     width: "100%", // Ensure it stretches across the container width
-    height: "300px", // Default height for desktop
+    height: "500px", // Default height for desktop
     overflowY: "scroll",
     border: "1px solid #ccc",
     borderRadius: "8px",
@@ -422,6 +399,8 @@ const styles = {
   inputContainer: {
     display: "flex",
     gap: "0.5rem",
+    width:"100%"
+
   },
   input: {
     flex: 1,
