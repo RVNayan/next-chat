@@ -78,11 +78,20 @@ const Chat = () => {
               Authorization: `Bearer ${token}`,
             },
           });
-
+  
           if (response.ok) {
             const data = await response.json();
             const sessionNumbers = data.data.map((msg) => msg.sessionId);
-            setSessions([...new Set(sessionNumbers)]);
+            const uniqueSessions = [...new Set(sessionNumbers)];
+            setSessions(uniqueSessions);
+  
+            // Default to session 1 if available
+            if (uniqueSessions.includes("1")) {
+              setSessionId("1");
+            } else if (uniqueSessions.length > 0) {
+              // Default to the first session if Session 1 doesn't exist
+              setSessionId(uniqueSessions[0]);
+            }
           } else {
             console.error("Failed to fetch sessions.");
           }
@@ -91,10 +100,10 @@ const Chat = () => {
         }
       }
     };
-
+  
     fetchSessions();
   }, [username]);
-
+  
   useEffect(() => {
     const fetchChatHistory = async () => {
       const token = localStorage.getItem("token");
@@ -240,16 +249,21 @@ const Chat = () => {
           </button>
           <h2>Previous</h2>
           <ul style={styles.sessionsList}>
-            {sessions.map((session) => (
-              <li
-                key={session}
-                onClick={() => handleSessionSelect(session)}
-                style={styles.sessionItem}
-              >
-                Session {session}
-              </li>
-            ))}
-          </ul>
+        {sessions.map((session) => (
+          <li
+            key={session}
+            onClick={() => handleSessionSelect(session)}
+            style={{
+              ...styles.sessionItem,
+              backgroundColor: sessionId === session ? "green" : "#0070f3", // Green for active, blue for others
+              color: "white",
+            }}
+          >
+            Session {session}
+          </li>
+        ))}
+      </ul>
+
         </div>
       )}
       {!isSidebarVisible && (
@@ -423,10 +437,17 @@ const styles = {
     height: "20px",
   },
   userIcon: {
-    fontSize: "1.2rem",
+    fontSize: "1rem",
     cursor: "pointer",
-    marginBottom: "1rem",
-    color: "#0070f3",
+    color: "white",
+    backgroundColor: "#0070f3", // Button background
+    padding: "0.5rem", // Padding for button-like appearance
+    borderRadius: "2px", // Rounded corners
+    border: "none",
+    display: "inline-block", // Keep it inline
+    textAlign: "center", // Center text alignment
+    transition: "background-color 0.3s", // Smooth hover effect
+    marginBottom: "10px"
   },
   dropdownMenu: {
     border: "1px solid #ccc",
