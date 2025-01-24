@@ -14,6 +14,7 @@ const Chat = () => {
   const [isSidebarVisible, setIsSidebarVisible] = useState(true); // Sidebar visibility
   const [isMobile, setIsMobile] = useState(false); // Check if the device is mobile
 
+  
   useEffect(() => {
     const handleResize = () => {
       const isMobileView = window.innerWidth <= 768; // Threshold for mobile devices
@@ -360,16 +361,18 @@ const styles = {
     marginTop: "10px",
   },
   sidebar: {
-    width: "200px",
+    width: "250px",
     padding: "1rem",
     borderRight: "1px solid #ccc",
     display: "flex",
     flexDirection: "column",
+    marginTop: "-50px"
   },
   logoMain: {
     marginTop: "10px",
     marginBottom: "30px",
-    width:"180px"
+    marginLeft: "30px",
+    width:"200px"
   },
   newSessionButton: {
     padding: "0.5rem 1rem",
@@ -427,7 +430,7 @@ const styles = {
   inputContainer: {
     display: "flex",
     gap: "0.5rem",
-    width:"100%"
+    width:"100%",
 
   },
   input: {
