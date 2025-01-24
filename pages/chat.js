@@ -83,15 +83,16 @@ const Chat = () => {
             const data = await response.json();
             const sessionNumbers = data.data.map((msg) => msg.sessionId);
             const uniqueSessions = [...new Set(sessionNumbers)];
-            setSessions(uniqueSessions);
   
-            // Default to session 1 if available
-            if (uniqueSessions.includes("1")) {
-              setSessionId("1");
-            } else if (uniqueSessions.length > 0) {
-              // Default to the first session if Session 1 doesn't exist
-              setSessionId(uniqueSessions[0]);
+            // Ensure "Session 1" exists and set it as the active session
+            if (!uniqueSessions.includes("1")) {
+              setSessions((prevSessions) => ["1", ...prevSessions]);
+              setSessionId("1"); // Set "Session 1" as the active session
+            } else {
+              setSessionId(uniqueSessions[0]); // Default to the first available session if "Session 1" exists
             }
+  
+            setSessions(uniqueSessions);
           } else {
             console.error("Failed to fetch sessions.");
           }
@@ -102,7 +103,10 @@ const Chat = () => {
     };
   
     fetchSessions();
-  }, [username]);
+  }, [username]);  // Fetch sessions when the username changes (on login)
+  
+  
+  
   
   useEffect(() => {
     const fetchChatHistory = async () => {
@@ -217,19 +221,29 @@ const Chat = () => {
   };
 
   const createNewSession = () => {
-    let newSessionId; // Use `let` instead of `const` since the value is assigned later.
-    if (sessions.length === 0) {
-      newSessionId = "1"; // Initialize as a string.
-    } else {
-      newSessionId = (sessions.length + 1).toString();
+    // Generate a new session ID based on the largest existing ID
+    const newSessionId = (Math.max(...sessions.map(Number)) + 1).toString();
+  
+    // Add the new session only if it's not already in the list
+    if (!sessions.includes(newSessionId)) {
+      setSessions((prevSessions) => [newSessionId, ...prevSessions]);
+      setSessionId(newSessionId);
+      setMessages([]); // Clear messages for the new session
     }
-    setSessions((prevSessions) => [...prevSessions, newSessionId]);
-    setSessionId(newSessionId);
-    setMessages([]);
   };
+  
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
+
+    const handleLogout = () => { //fixes logout ptoblem
+      // Remove the token from localStorage
+      localStorage.removeItem("token");
+    
+      // Clear user-related state
+      setUsername(null);
+      setSessionId(null);
+      setMessages([]);
+      setSessions([]);
+    
     window.location.href = "/";
   };
 
