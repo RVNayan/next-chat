@@ -260,7 +260,7 @@ const Chat = () => {
           </button>
           <img src="/logo.jpg" style={styles.logoMain} />
           <button onClick={createNewSession} style={styles.newSessionButton}>
-            New Chat
+            New Session
           </button>
           <h2>Previous</h2>
           <ul style={styles.sessionsList}>
@@ -310,7 +310,7 @@ const Chat = () => {
           )}
         </div>
         <h1 style={{ marginBottom: "30px" }}>
-          Create a New Chat or select an existing Session
+          Start a New Chat or select an existing Session
         </h1>
         <div style={styles.chatBox}>
           {messages.map((msg, index) => (
