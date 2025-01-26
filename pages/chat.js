@@ -313,6 +313,8 @@ const Chat = () => {
           Start a New Chat or select an existing Session
         </h1>
         <div style={styles.chatBox}>
+        
+        <img src="/chatback.jpg" style={styles.backgroundImage} alt="Chat Background" />
           {messages.map((msg, index) => (
             <div
               key={index}
@@ -328,6 +330,7 @@ const Chat = () => {
             </div>
           ))}
         </div>
+
         <div style={styles.inputContainer}>
           <input
             type="text"
@@ -366,13 +369,15 @@ const styles = {
     borderRight: "1px solid #ccc",
     display: "flex",
     flexDirection: "column",
-    marginTop: "-50px"
-  },
+    
+    
+    },
   logoMain: {
     marginTop: "10px",
     marginBottom: "30px",
-    marginLeft: "30px",
-    width:"200px"
+    marginLeft: "10px",
+    width:"200px",
+
   },
   newSessionButton: {
     padding: "0.5rem 1rem",
@@ -382,6 +387,7 @@ const styles = {
     borderRadius: "4px",
     cursor: "pointer",
     marginBottom: "1rem",
+    background: "linear-gradient(to left,rgba(255, 255, 255, 0.7),green"
   },
   sessionsList: {
     listStyleType: "none",
@@ -396,6 +402,8 @@ const styles = {
     transition: "background-color 0.3s",
   },
   chatContainer: {
+
+
     display: "flex", // Enable flexbox
     flexDirection: "column", // Stack the chat vertically
     justifyContent: "center", // Center-align vertically
@@ -404,9 +412,20 @@ const styles = {
     padding: "1rem",
     marginTop: "30px",
     maxWidth: "800px", // Lock maximum width for desktop
-    maxHeight: "600px", // Lock maximum height for desktop
+    maxHeight: "900px", // Lock maximum height for desktop
     overflow: "hidden", // Prevent content from spilling out
     boxSizing: "border-box",
+  },
+  backgroundImage: {
+    
+    position: "absolute", // Position the image behind the content
+    top: 0,
+    left: 0,
+    width: "100%",
+    height: "100%",
+    objectFit: "cover",  // Ensures the image covers the entire chat box area without distortion
+    zIndex: -1, // Ensure it's behind the messages
+     
   },
   chatBox: {
     width: "100%", // Ensure it stretches across the container width
@@ -419,7 +438,9 @@ const styles = {
     display: "flex",
     flexDirection: "column",
     gap: "0.5rem",
-    backgroundColor: "#f9f9f9",
+    backgroundColor: "rgba(0,0,0,0.6)",
+    background: "linear-gradient(to left,rgba(255, 255, 255, 1), rgba(0, 112, 243, 0.7)", // Linear gradient overlay
+
   },
   message: {
     padding: "0.5rem",
