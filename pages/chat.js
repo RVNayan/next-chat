@@ -13,7 +13,7 @@ const Chat = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false); // User menu dropdown state
   const [isSidebarVisible, setIsSidebarVisible] = useState(true); // Sidebar visibility
   const [isMobile, setIsMobile] = useState(false); // Check if the device is mobile
-
+  const [hoveredSession, setHoveredSession] = useState(null); // State to track hovers
   
   useEffect(() => {
     const handleResize = () => {
@@ -268,10 +268,16 @@ const Chat = () => {
           <li
             key={session}
             onClick={() => handleSessionSelect(session)}
+            onMouseEnter={() => setHoveredSession(session)} // Set hovered session
+            onMouseLeave={() => setHoveredSession(null)} // Reset hovered session
+            
+
             style={{
               ...styles.sessionItem,
-              backgroundColor: sessionId === session ? "green" : "#0070f3", // Green for active, blue for others
+              backgroundColor: sessionId === session ? "green" : (hoveredSession === session ? "rgba(0, 123, 251, 0.8)" : "#0070f3"), // Change color on hover
               color: "white",
+              transform: hoveredSession === session ? "scale(1.08)" : "scale(1)", // Scale up on hover
+              transition: "background-color 0.3s, transform 0.3s", 
             }}
           >
             Session {session}
@@ -291,8 +297,13 @@ const Chat = () => {
       )}
       <div style={styles.chatContainer}>
         <div
-          style={styles.userIcon}
-          onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+        style={{...styles.userIcon, 
+          transform: hoveredSession ? "scale(1.05)" : "scale(1)", // Scale up on hover
+          transition: "background-color 0.3s, transform 0.3s", 
+        }}
+        onMouseEnter={() => setHoveredSession(true)} // Set hovered state
+        onMouseLeave={() => setHoveredSession(false)}   
+        onClick={() => setIsDropdownOpen(!isDropdownOpen)}
         >
           {`Current user - ${username}`}
           {isDropdownOpen && (
@@ -412,7 +423,7 @@ const styles = {
     padding: "1rem",
     marginTop: "30px",
     maxWidth: "800px", // Lock maximum width for desktop
-    maxHeight: "900px", // Lock maximum height for desktop
+    maxHeight: "800px", // Lock maximum height for desktop
     overflow: "hidden", // Prevent content from spilling out
     boxSizing: "border-box",
   },
@@ -478,14 +489,15 @@ const styles = {
     fontSize: "1rem",
     cursor: "pointer",
     color: "white",
-    backgroundColor: "#0070f3", // Button background
+    backgroundColor: "green", // Button background
     padding: "0.5rem", // Padding for button-like appearance
-    borderRadius: "2px", // Rounded corners
+    borderRadius: "20px", // Rounded corners
     border: "none",
     display: "inline-block", // Keep it inline
     textAlign: "center", // Center text alignment
     transition: "background-color 0.3s", // Smooth hover effect
-    marginBottom: "10px"
+    marginBottom: "10px",
+    boxShadow: "0px 4px 4px hsla(0, 0.00%, 100.00%, 0.96)", // Subtle white shadow effect
   },
   dropdownMenu: {
     border: "1px solid #ccc",
